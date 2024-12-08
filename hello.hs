@@ -1,13 +1,30 @@
+main :: IO ()
 main = putStrLn myhtml
 
-myhtml = makeHtml "Hello title" "Hello, world!"
+myhtml :: String
+myhtml = makeHtml "Hello title" (h1_ "Hello World!" <> p_ "Let's learn about Haskell")
 
+makeHtml :: String -> String -> String
 makeHtml title body = html_ $ head_ $ title_ title <> body_ body
 
-html_ s = "<html>" <> s <> "</html>"
+el :: String -> String -> String
+el tag content =
+  "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
 
-body_ s = "<body>" <> s <> "</body>"
+html_ :: String -> String
+html_ = el "html"
 
-head_ s = "<head>" <> s <> "</head>"
+body_ :: String -> String
+body_ = el "body"
 
-title_ s = "<title>" <> s <> "</title>"
+head_ :: String -> String
+head_ = el "head"
+
+title_ :: String -> String
+title_ = el "title"
+
+h1_ :: String -> String
+h1_ = el "h1"
+
+p_ :: String -> String
+p_ = el "p"
