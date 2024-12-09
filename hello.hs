@@ -1,30 +1,51 @@
 main :: IO ()
-main = putStrLn myhtml
+main = putStrLn (render myhtml)
 
-myhtml :: String
-myhtml = makeHtml "Hello title" (h1_ "Hello World!" <> p_ "Let's learn about Haskell")
+myhtml :: Html
+myhtml =
+  html_
+    "My title"
+    ( append_
+        (h1_ "Heading")
+        ( append_
+            (p_ "Paragraph #1")
+            (p_ "Paragraph #2")
+        )
+    )
 
-makeHtml :: String -> String -> String
-makeHtml title body = html_ $ head_ $ title_ title <> body_ body
+newtype Html = Html String
+
+newtype Structure = Structure String
+
+type Title = String
+
+html_ :: Title -> Structure -> Html
+html_ title content =
+  Html
+    ( el
+        "html"
+        ( el
+            "head"
+            (el "title" title)
+            <> el "body" (getStructureString content)
+        )
+    )
 
 el :: String -> String -> String
 el tag content =
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
 
-html_ :: String -> String
-html_ = el "html"
+h1_ :: String -> Structure
+h1_ = Structure . el "h1"
 
-body_ :: String -> String
-body_ = el "body"
+p_ :: String -> Structure
+p_ = Structure . el "p"
 
-head_ :: String -> String
-head_ = el "head"
+append_ :: Structure -> Structure -> Structure
+append_ (Structure s1) (Structure s2) = Structure (s1 <> s2)
 
-title_ :: String -> String
-title_ = el "title"
+getStructureString :: Structure -> String
+getStructureString (Structure s) = s
 
-h1_ :: String -> String
-h1_ = el "h1"
-
-p_ :: String -> String
-p_ = el "p"
+render :: Html -> String
+render (Html s) = s
