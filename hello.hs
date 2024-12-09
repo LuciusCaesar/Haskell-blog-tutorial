@@ -6,11 +6,11 @@ main = putStrLn (render myhtml)
 myhtml :: Html
 myhtml =
   html_
-    "My title"
+    "My title <html> awesome"
     ( append_
-        (h1_ "Heading")
+        (h1_ "Heading <br /> test")
         ( append_
-            (p_ "Paragraph #1")
-            (p_ "Paragraph #2")
+            (p_ "Paragraph \\ plip #1")
+            (p_ "Paragraph // plop #2")
         )
     )
