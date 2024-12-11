@@ -6,6 +6,9 @@ newtype Structure = Structure String
 
 type Title = String
 
+instance Semigroup Structure where
+  (<>) (Structure x) (Structure y) = Structure (x <> y)
+
 html_ :: Title -> Structure -> Html
 html_ title content =
   Html
@@ -37,8 +40,8 @@ ol_ = Structure . el "ol" . concatMap (el "li" . getStructureString)
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
 
-append_ :: Structure -> Structure -> Structure
-append_ (Structure s1) (Structure s2) = Structure (s1 <> s2)
+-- append_ :: Structure -> Structure -> Structure
+-- append_ (Structure s1) (Structure s2) = Structure (s1 <> s2)
 
 getStructureString :: Structure -> String
 getStructureString (Structure s) = s
