@@ -7,6 +7,7 @@ module Markup
         OrderedList,
         CodeBlock
       ),
+    parse,
   )
 where
 
@@ -25,18 +26,6 @@ data Structure
 
 parse :: String -> Document
 parse = parseLines Nothing . lines
-
--- parseLines :: [String] -> [String] -> Document
--- parseLines currentParagraph txts =
---   -- currentParagraph is an accumulator
---   let paragraph = Paragraph (unlines (reverse currentParagraph))
---    in -- will create a Paragraph, when needed only, by and concatanating all accumulated lines.
---       case txts of
---         [] -> [paragraph] -- if there is no text left to parse, just return the paragraph.
---         currentLine : rest ->
---           if trim currentLine == "" -- Empty lines separate new paragrphs
---             then paragraph : parseLines [] rest
---             else parseLines (currentLine : currentParagraph) rest -- otherwise, we accumulate and keep going
 
 parseLines :: Maybe Structure -> [String] -> Document
 parseLines context txts =

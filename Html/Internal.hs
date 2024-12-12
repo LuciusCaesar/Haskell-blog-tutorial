@@ -1,5 +1,7 @@
 module Html.Internal where
 
+import GHC.Natural (Natural)
+
 newtype Html = Html String
 
 newtype Structure = Structure String
@@ -28,6 +30,9 @@ el tag content =
 h1_ :: String -> Structure
 h1_ = Structure . el "h1" . escape
 
+h_ :: Natural -> String -> Structure
+h_ n = Structure . el ("h" <> show n) . escape
+
 p_ :: String -> Structure
 p_ = Structure . el "p" . escape
 
@@ -40,8 +45,8 @@ ol_ = Structure . el "ol" . concatMap (el "li" . getStructureString)
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
 
--- append_ :: Structure -> Structure -> Structure
--- append_ (Structure s1) (Structure s2) = Structure (s1 <> s2)
+empty_ :: Structure
+empty_ = Structure ""
 
 getStructureString :: Structure -> String
 getStructureString (Structure s) = s
@@ -60,3 +65,6 @@ escape =
           '\'' -> "&#39;"
           _ -> [c]
    in concat . map escapeChar
+
+instance Monoid Structure where
+  mempty = empty_
