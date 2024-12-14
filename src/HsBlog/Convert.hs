@@ -1,9 +1,7 @@
-{-# OPTIONS_GHC -Wall #-}
+module HsBlog.Convert where
 
-module Convert where
-
-import Html qualified
-import Markup qualified
+import qualified HsBlog.Markup as Markup
+import qualified HsBlog.Html as Html
 
 convert :: Html.Title -> Markup.Document -> Html.Html
 convert title = Html.html_ title . foldMap convertStructure
@@ -21,6 +19,3 @@ convertStructure structure =
       Html.ol_ $ map Html.p_ list
     Markup.CodeBlock list ->
       Html.code_ (unlines list)
-
-process :: Html.Title -> String -> String
-process title = Html.render . convert title . Markup.parse

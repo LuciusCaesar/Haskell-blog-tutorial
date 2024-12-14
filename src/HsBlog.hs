@@ -1,8 +1,11 @@
-{-# OPTIONS_GHC -Wall #-}
+module HsBlog (
+  main, 
+  process) 
+where
 
-module Main where
-
-import Convert (process)
+import qualified HsBlog.Markup as Markup
+import qualified HsBlog.Html as Html
+import HsBlog.Convert (convert)
 import System.Directory (doesFileExist)
 import System.Directory.Internal.Prelude (getArgs)
 
@@ -34,6 +37,10 @@ main = do
           whenIO confirm $ writeFile output $ process input content
         else putStrLn "file does not exist"
     _ -> putStrLn "Usage: runghc Main.hs [-- <input-file> <output-file>]"
+
+
+process :: Html.Title -> String -> String
+process title = Html.render . convert title . Markup.parse
 
 whenIO :: IO Bool -> IO () -> IO ()
 -- whenIO cond action =

@@ -1,4 +1,4 @@
-module Markup
+module HsBlog.Markup
   ( Document,
     Structure
       ( Heading,
@@ -11,7 +11,7 @@ module Markup
   )
 where
 
-import GHC.Data.Maybe (maybeToList)
+import Data.Maybe (maybeToList)
 import Numeric.Natural
 
 type Document = [Structure]
