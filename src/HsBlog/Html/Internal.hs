@@ -2,6 +2,8 @@ module HsBlog.Html.Internal where
 
 import GHC.Natural (Natural)
 
+---- DATA --------
+
 newtype Html = Html String
 
 newtype Structure = Structure String
@@ -10,6 +12,13 @@ type Title = String
 
 instance Semigroup Structure where
   (<>) (Structure x) (Structure y) = Structure (x <> y)
+
+instance Monoid Structure where
+  mempty = empty_
+
+newtype Content = Content String
+
+----- FUNCTIONS ----------
 
 html_ :: Title -> Structure -> Html
 html_ title content =
@@ -27,14 +36,18 @@ el :: String -> String -> String
 el tag content =
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
 
-h1_ :: String -> Structure
-h1_ = Structure . el "h1" . escape
+elAttrs :: String -> String -> String -> String
+elAttrs tag attrs content =
+  "<" <> tag <> " " <> attrs <> ">" <> content <> "</" <> tag <> ">"
 
-h_ :: Natural -> String -> Structure
-h_ n = Structure . el ("h" <> show n) . escape
+h1_ :: Content -> Structure
+h1_ = Structure . el "h1" . getContentString
 
-p_ :: String -> Structure
-p_ = Structure . el "p" . escape
+h_ :: Natural -> Content -> Structure
+h_ n = Structure . el ("h" <> show n) . getContentString
+
+p_ :: Content -> Structure
+p_ = Structure . el "p" . getContentString
 
 ul_ :: [Structure] -> Structure
 ul_ = Structure . el "ul" . concatMap (el "li" . getStructureString)
@@ -42,8 +55,8 @@ ul_ = Structure . el "ul" . concatMap (el "li" . getStructureString)
 ol_ :: [Structure] -> Structure
 ol_ = Structure . el "ol" . concatMap (el "li" . getStructureString)
 
-code_ :: String -> Structure
-code_ = Structure . el "pre" . escape
+code_ :: Content -> Structure
+code_ = Structure . el "pre" . getContentString
 
 empty_ :: Structure
 empty_ = Structure ""
@@ -64,7 +77,29 @@ escape =
           '"' -> "&quot;"
           '\'' -> "&#39;"
           _ -> [c]
-   in concat . map escapeChar
+   in concatMap escapeChar
 
-instance Monoid Structure where
-  mempty = empty_
+------ CONTENT ---------
+
+txt_ :: String -> Content
+txt_ = Content . escape
+
+img_ :: FilePath -> Content
+img_ path = Content $ "<img src = \"" <> escape path <> "\" />"
+
+link_ :: FilePath -> Content -> Content
+link_ path content =
+  Content $
+    elAttrs
+      "a"
+      ("href = \"" <> escape path <> "\"")
+      (getContentString content)
+
+b_ :: Content -> Content
+b_ = Content . el "b" . getContentString
+
+i_ :: Content -> Content
+i_ = Content . el "i" . getContentString
+
+getContentString :: Content -> String
+getContentString (Content s) = s
