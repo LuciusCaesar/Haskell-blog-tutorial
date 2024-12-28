@@ -52,18 +52,14 @@ main = do
             Stdin ->
               action "" stdin
             InputFile file ->
-              bracket
-                (openFile file ReadMode)
-                hClose
+              withFile file ReadMode
                 (action file)
         withOutputHandle :: (Handle -> IO a) -> IO a
         withOutputHandle action =
           case output of
             Stdout -> action stdout
             OutputFile file ->
-              bracket
-                (openFile file WriteMode)
-                hClose
+              withFile file WriteMode
                 action
       in withInputHandle (\title -> withOutputHandle . HsBlog.convertSingle title)
 
