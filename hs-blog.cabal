@@ -32,12 +32,15 @@ library
   build-depends:
       base
     , directory
+    , filepath
   exposed-modules:
     HsBlog
       HsBlog.Convert
       HsBlog.Html
         HsBlog.Html.Internal
       HsBlog.Markup
+      HsBlog.Directory
+      HsBlog.Env
   -- other-modules:
 
 executable hs-blog-gen

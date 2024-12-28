@@ -5,39 +5,8 @@ module Main where
 
 import OptParse
 import System.IO
-import Control.Exception (bracket)
 import HsBlog
 
--- main :: IO ()
--- main = do
---   options <- parse
---   case options of
---     ConvertDir input output ->
---       HsBlog.convertDirectory input output
---     ConvertSingle input output -> do
---       (title, inputHandle) <-
---         case input of
---           Stdin ->
---             pure ("", stdin)
---           InputFile file ->
---             (,) file <$> openFile file ReadMode
-
---       outputHandle <-
---         case output of
---           Stdout -> pure stdout
---           OutputFile file -> do
---             exists <- doesFileExist file
---             shouldOpenFile <-
---               if exists
---                 then confirm
---                 else pure True
---             if shouldOpenFile
---               then openFile file WriteMode
---               else exitFailure
-
---       HsBlog.convertSingle title inputHandle outputHandle
---       hClose inputHandle
---       hClose outputHandle
 main :: IO ()
 main = do
   options <- parse

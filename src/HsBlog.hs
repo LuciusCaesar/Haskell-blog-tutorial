@@ -9,6 +9,7 @@ where
 import HsBlog.Convert (convert)
 import qualified HsBlog.Html as Html
 import qualified HsBlog.Markup as Markup
+import qualified HsBlog.Directory as Directory
 import System.IO
 
 convertSingle :: Html.Title -> Handle -> Handle -> IO ()
@@ -17,7 +18,7 @@ convertSingle title input output = do
   hPutStrLn output (process title content)
 
 convertDirectory :: FilePath -> FilePath -> IO ()
-convertDirectory = error "Not implemented"
+convertDirectory = Directory.convertDirectory
 
 process :: Html.Title -> String -> String
 process title = Html.render . convert title . Markup.parse
