@@ -9,6 +9,7 @@ module HsBlog.Directory
 import qualified HsBlog.Markup as Markup
 import qualified HsBlog.Html as Html
 import HsBlog.Convert (convert, convertStructure)
+import HsBlog.Env (Env(..))
 
 import Data.List (partition)
 import Data.Traversable (for)
@@ -36,12 +37,12 @@ import System.Directory
 --   '.html' files in the process. Recording unsuccessful reads and writes to stderr.
 --
 -- May throw an exception on output directory creation.
-convertDirectory :: FilePath -> FilePath -> IO ()
-convertDirectory inputDir outputDir = do
+convertDirectory :: Env -> FilePath -> FilePath -> IO ()
+convertDirectory env inputDir outputDir = do
   DirContents filesToProcess filesToCopy <- getDirFilesAndContent inputDir
   createOutputDirectoryOrExit outputDir
   let
-    outputHtmls = txtsToRenderedHtml filesToProcess
+    outputHtmls = txtsToRenderedHtml env filesToProcess
   copyFiles outputDir filesToCopy
   writeFiles outputDir outputHtmls
   putStrLn "Done."
@@ -75,8 +76,8 @@ data DirContents
 ------------------------------------
 -- * Build index page
 
-buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
-buildIndex files =
+buildIndex :: Env -> [(FilePath, Markup.Document)] -> Html.Html
+buildIndex env files =
   let
     previews =
       map
@@ -92,7 +93,8 @@ buildIndex files =
         files
   in
     Html.html_
-      "Blog"
+      (Html.title_ (eBlogName env) 
+        <> Html.stylesheet_ (eStylesheetPath env))
       ( Html.h_ 1 (Html.link_ "index.html" (Html.txt_ "Blog"))
         <> Html.h_ 2 (Html.txt_ "Posts")
         <> mconcat previews
@@ -102,20 +104,20 @@ buildIndex files =
 -- * Conversion
 
 -- | Convert text files to Markup, build an index, and render as html.
-txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
-txtsToRenderedHtml txtFiles =
+txtsToRenderedHtml :: Env -> [(FilePath, String)] -> [(FilePath, String)]
+txtsToRenderedHtml env txtFiles =
   let
     txtOutputFiles = map toOutputMarkupFile txtFiles
-    index = ("index.html", buildIndex txtOutputFiles)
+    index = ("index.html", buildIndex env txtOutputFiles)
   in
-    map (fmap Html.render) (index : map convertFile txtOutputFiles)
+    map (fmap Html.render) (index : map (convertFile env) txtOutputFiles)
 
 toOutputMarkupFile :: (FilePath, String) -> (FilePath, Markup.Document)
 toOutputMarkupFile (file, content) =
   (takeBaseName file <.> "html", Markup.parse content)
 
-convertFile :: (FilePath, Markup.Document) -> (FilePath, Html.Html)
-convertFile (file, doc) = (file, convert file doc)
+convertFile :: Env -> (FilePath, Markup.Document) -> (FilePath, Html.Html)
+convertFile env (file, doc) = (file, convert env file doc)
 
 ------------------------------------
 -- * Output to directory

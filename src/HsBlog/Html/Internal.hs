@@ -6,6 +6,8 @@ import GHC.Natural (Natural)
 
 newtype Html = Html String
 
+newtype Head = Head String
+
 newtype Structure = Structure String
 
 type Title = String
@@ -16,22 +18,23 @@ instance Semigroup Structure where
 instance Monoid Structure where
   mempty = empty_
 
+instance Semigroup Head where
+  (<>) (Head x) (Head y) = Head (x <> y)
+
+instance Monoid Head where
+  mempty = Head ""
+
 newtype Content = Content String
 
 ----- FUNCTIONS ----------
 
-html_ :: Title -> Structure -> Html
-html_ title content =
+html_ :: Head -> Structure -> Html
+html_ (Head h) body = 
   Html
-    ( el
-        "html"
-        ( el
-            "head"
-            (el "title" (escape title))
-            <> el "body" (getStructureString content)
-        )
-    )
-
+  $ el "html" 
+    $ el "head" h
+      <> el "body" (getStructureString body)
+      
 el :: String -> String -> String
 el tag content =
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
@@ -39,6 +42,15 @@ el tag content =
 elAttrs :: String -> String -> String -> String
 elAttrs tag attrs content =
   "<" <> tag <> " " <> attrs <> ">" <> content <> "</" <> tag <> ">"
+
+title_ :: Title -> Head
+title_ = Head . el "title" . escape
+
+stylesheet_ :: FilePath -> Head
+stylesheet_ path = Head $ "<link rel = \"stylesheet\" type = \"text/css\" href = \"" <> escape path <> "\">"
+
+meta_ :: String -> String -> Head
+meta_ name content = Head $ "<meta name = \"" <> escape name <> "\" content = \"" <> escape content <> "\">"
 
 h1_ :: Content -> Structure
 h1_ = Structure . el "h1" . getContentString
