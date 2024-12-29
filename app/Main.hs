@@ -6,14 +6,13 @@ module Main where
 import OptParse
 import System.IO
 import HsBlog
-import HsBlog.Env (defaultEnv)
 
 main :: IO ()
 main = do
   options <- parse
   case options of
-    ConvertDir input output ->
-      HsBlog.convertDirectory defaultEnv input output
+    ConvertDir input output env ->
+      HsBlog.convertDirectory env input output
     ConvertSingle input output ->
       let
         withInputHandle :: (String -> Handle -> IO a) -> IO a
@@ -31,7 +30,7 @@ main = do
             OutputFile file ->
               withFile file WriteMode
                 action
-      in withInputHandle (\title -> withOutputHandle . HsBlog.convertSingle defaultEnv title)
+      in withInputHandle (\title -> withOutputHandle . HsBlog.convertSingle title)
 
 ------------------------------------------------
 

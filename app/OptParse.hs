@@ -9,6 +9,7 @@ where
 
 import Data.Maybe (fromMaybe)
 import Options.Applicative
+import HsBlog.Env
 
 ------------------------------------------------
 
@@ -17,7 +18,7 @@ import Options.Applicative
 -- | Model
 data Options
   = ConvertSingle SingleInput SingleOutput
-  | ConvertDir FilePath FilePath
+  | ConvertDir FilePath FilePath Env
   deriving (Show)
 
 -- | A single input source
@@ -31,6 +32,7 @@ data SingleOutput
   = Stdout
   | OutputFile FilePath
   deriving (Show)
+
 
 ------------------------------------------------
 
@@ -116,7 +118,7 @@ pOutputFile = OutputFile <$> parser
 
 pConvertDir :: Parser Options
 pConvertDir =
-  ConvertDir <$> pInputDir <*> pOutputDir
+  ConvertDir <$> pInputDir <*> pOutputDir <*> pEnv
 
 -- | Parser for input directory
 pInputDir :: Parser FilePath
@@ -136,4 +138,32 @@ pOutputDir =
         <> short 'o'
         <> metavar "DIRECTORY"
         <> help "Output directory"
+    )
+
+-- | Parser for environment
+pEnv :: Parser Env
+pEnv = Env <$> pBlogName <*> pStylesheetPath
+
+-- | Parser for blog name
+pBlogName :: Parser String
+pBlogName =
+  strOption
+    ( long "name"
+        <> short 'n'
+        <> metavar "STRING"
+        <> help "Blog name"
+        <> value (eBlogName defaultEnv)
+        <> showDefault
+    )
+
+-- | Parser for stylesheet path
+pStylesheetPath :: Parser FilePath
+pStylesheetPath =
+  strOption
+    ( long "stylesheet"
+        <> short 's'
+        <> metavar "FILE"
+        <> help "Stylesheet path"
+        <> value (eStylesheetPath defaultEnv)
+        <> showDefault
     )

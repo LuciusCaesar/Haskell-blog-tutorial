@@ -10,16 +10,16 @@ import HsBlog.Convert (convert)
 import qualified HsBlog.Html as Html
 import qualified HsBlog.Markup as Markup
 import qualified HsBlog.Directory as Directory
-import HsBlog.Env (Env)
+import HsBlog.Env (Env, defaultEnv)
 import System.IO
 
-convertSingle :: Env -> Html.Title -> Handle -> Handle -> IO ()
-convertSingle env title input output = do
+convertSingle :: String -> Handle -> Handle -> IO ()
+convertSingle title input output = do
   content <- hGetContents input
-  hPutStrLn output (process env title content)
+  hPutStrLn output (process title content)
 
 convertDirectory :: Env -> FilePath -> FilePath -> IO ()
 convertDirectory = Directory.convertDirectory
 
-process :: Env -> Html.Title -> String -> String
-process env title = Html.render . convert env title . Markup.parse
+process :: String -> String -> String
+process title = Html.render . convert defaultEnv title . Markup.parse
