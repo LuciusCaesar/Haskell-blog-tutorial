@@ -1,10 +1,21 @@
+{- | Markup to HTML conversion module.
+
+This module handles converting documents written in our custom
+Markup language into HTML pages.
+-}
 module HsBlog.Convert where
 
 import qualified HsBlog.Html as Html
 import qualified HsBlog.Markup as Markup
 import HsBlog.Env (Env(..))
 
-convert :: Env -> String -> Markup.Document -> Html.Html
+{- | Convert a document to HTML.
+-}
+convert 
+  :: Env -- ^ Environment containing blog name and stylesheet path
+  -> String -- ^ Title of the page
+  -> Markup.Document -- ^ Document to convert
+  -> Html.Html -- ^ HTML representation of the document
 convert env title doc =
   let
     h =
@@ -19,7 +30,10 @@ convert env title doc =
   in
     Html.html_ h body
 
-convertStructure :: Markup.Structure -> Html.Structure
+-- | Convert a Markup structure to an HTML Structure.
+convertStructure 
+  :: Markup.Structure -- ^ Markup structure to convert (see `HsBlog.Markup.Structure`)
+  -> Html.Structure -- ^ HTML structure (see `HsBlog.Html.Structure`)
 convertStructure structure =
   case structure of
     Markup.Heading n txt ->

@@ -1,8 +1,9 @@
 -- HsBlog.hs
+-- | Main module for the HsBlog application.
 module HsBlog
-  ( convertSingle,
-    convertDirectory,
-    process,
+  ( convertSingle, -- ^ Convert a single file
+    convertDirectory, -- ^ Convert a directory
+    process, -- ^ Convert a string
   )
 where
 
@@ -13,13 +14,27 @@ import qualified HsBlog.Directory as Directory
 import HsBlog.Env (Env, defaultEnv)
 import System.IO
 
-convertSingle :: String -> Handle -> Handle -> IO ()
+-- | Convert a single file from input to output.
+convertSingle 
+  :: String -- ^ Title of the page
+  -> Handle -- ^ Input handle
+  -> Handle -- ^ Output handle
+  -> IO ()
 convertSingle title input output = do
   content <- hGetContents input
   hPutStrLn output (process title content)
 
-convertDirectory :: Env -> FilePath -> FilePath -> IO ()
+-- | Convert a directory from input to output.
+convertDirectory 
+  :: Env -- ^ Environment containing blog name and stylesheet path
+  -> FilePath -- ^ Input directory
+  -> FilePath -- ^ Output directory
+  -> IO ()
 convertDirectory = Directory.convertDirectory
 
-process :: String -> String -> String
+-- | Convert a string to HTML.
+process 
+  :: String -- ^ Title of the page
+  -> String -- ^ Content to convert in Markup syntax
+  -> String -- ^ HTML representation of the content
 process title = Html.render . convert defaultEnv title . Markup.parse

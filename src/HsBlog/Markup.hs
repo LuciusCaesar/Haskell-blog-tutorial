@@ -1,5 +1,7 @@
+-- | This module provides a simple markup parser for the HsBlog project.
 module HsBlog.Markup
-  ( Document,
+  ( -- * Types
+    Document,
     Structure
       ( Heading,
         Paragraph,
@@ -7,6 +9,7 @@ module HsBlog.Markup
         OrderedList,
         CodeBlock
       ),
+    -- * Functions
     parse,
   )
 where
@@ -14,8 +17,10 @@ where
 import Data.Maybe (maybeToList)
 import Numeric.Natural
 
+-- | A Markup document is a list of structures.
 type Document = [Structure]
 
+-- | A Markup structure is a heading, paragraph, list or code block.
 data Structure
   = Heading Natural String
   | Paragraph String
@@ -24,10 +29,15 @@ data Structure
   | CodeBlock [String]
   deriving (Show, Eq)
 
+-- | Parse a string into a Markup document.
 parse :: String -> Document
 parse = parseLines Nothing . lines
 
-parseLines :: Maybe Structure -> [String] -> Document
+-- | Parse a list of lines into a Markup document.
+parseLines 
+  :: Maybe Structure -- ^ Current context: the already parsed structure to which adding the next line
+  -> [String] -- ^ Remaining lines to parse
+  -> Document -- ^ Parsed document
 parseLines context txts =
   case txts of
     -- done case
@@ -67,5 +77,6 @@ parseLines context txts =
               _ ->
                 maybe id (:) context (parseLines (Just (Paragraph line)) rest)
 
+-- | Trim leading and trailing whitespace.
 trim :: String -> String
 trim = unwords . words

@@ -1,5 +1,4 @@
 -- | Process multiple files and convert directories
-
 module HsBlog.Directory
   ( convertDirectory
   , buildIndex
@@ -77,6 +76,7 @@ data DirContents
 ------------------------------------
 -- * Build index page
 
+-- | Build an index page from a list of files and their content.
 buildIndex :: [(FilePath, Markup.Document)] -> Reader Env Html.Html
 buildIndex files = do
   env <- ask
