@@ -33,6 +33,8 @@ library
       base
     , directory
     , filepath
+    , mtl
+    , transformers
   exposed-modules:
     HsBlog
       HsBlog.Convert
