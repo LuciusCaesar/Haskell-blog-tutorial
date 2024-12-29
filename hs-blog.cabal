@@ -65,7 +65,9 @@ test-suite hs-blog-gen-test
   hs-source-dirs: test
   main-is: Spec.hs
 
-  -- other-modules:
+  other-modules:
+    MarkupParsingSpec
+    , SpecHook
   build-depends:
       base
     , hspec
